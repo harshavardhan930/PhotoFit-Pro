@@ -1,0 +1,28 @@
+# render.yaml
+# This file tells Render how to build and run your service.
+# Add this file to the root of your repository.
+
+services:
+  - type: web
+    name: photofit-pro
+    # Use 'python' for Python services, 'docker' for Docker-based services
+    env: python
+    # Specify the Python version. This is a more robust way than runtime.txt
+    pythonVersion: '3.10.13'
+    # Commands to run before the main build command.
+    # This is where we install the system dependencies for dlib and OpenCV.
+    preBuildCommand: |
+      apt-get update && apt-get install -y --no-install-recommends \
+      build-essential \
+      cmake \
+      libopenblas-dev \
+      liblapack-dev \
+      libjpeg-dev
+    # The command to install your Python dependencies.
+    buildCommand: "pip install -r requirements.txt"
+    # The command to start your web server.
+    startCommand: "gunicorn --bind 0.0.0.0:$PORT app:app"
+    # Optional: Set environment variables here if needed
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.13
