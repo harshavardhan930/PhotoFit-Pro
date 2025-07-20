@@ -25,4 +25,4 @@ services:
     # Optional: Set environment variables here if needed
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.10.13
