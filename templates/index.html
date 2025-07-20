@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhotoFit Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #3f51b5; /* A deeper, professional blue */
+      --primary-light: #7986cb;
+      --accent-color: #ff9800; /* A contrasting orange for highlights */
+      --text-color: #333;
+      --light-gray: #f5f7fa; /* A very light, subtle background */
+      --border-color: #ddd;
+      --white: #ffffff;
+      --shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* More subtle, spread shadow */
+      --border-radius: 12px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--light-gray); /* Full-screen background */
+      display: flex;
+      flex-direction: column; /* Stack header and main content */
+      justify-content: flex-start; /* Align content to the top */
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-color);
+      box-sizing: border-box;
+      overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    header {
+      width: 100%;
+      background-color: var(--primary-color);
+      color: var(--white);
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 40px; /* Space below header */
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      color: var(--white);
+    }
+
+    /* Style for the logo inside the header */
+    .header-logo {
+      height: 80px; /* Adjust as needed */
+      width: auto;
+      vertical-align: middle; /* Align with text */
+      margin-right: 10px; /* Space between logo and text */
+    }
+
+    .main-content {
+      background-color: var(--white);
+      padding: 40px 50px; /* More padding for a wider feel */
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 700px; /* Increased max-width for a less constrained look */
+      box-sizing: border-box;
+      margin-bottom: 40px; /* Space above footer (if any) */
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600; /* Slightly bolder labels */
+      color: var(--text-color);
+      font-size: 1rem;
+    }
+
+    input[type="file"] {
+      display: none; /* Hide default file input */
+    }
+
+    .upload-area {
+      border: 2px dashed var(--primary-light); /* Dashed border with primary light color */
+      background-color: rgba(63, 81, 181, 0.03); /* Very light tint */
+      border-radius: var(--border-radius);
+      padding: 30px; /* More padding */
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 30px;
+      transition: border-color 0.3s ease, background-color 0.3s ease;
+      position: relative;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary-color);
+      background-color: rgba(63, 81, 181, 0.08); /* More prominent hover tint */
+    }
+
+    .upload-area p {
+      margin: 0;
+      color: #666;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .upload-area .icon {
+      font-size: 3rem; /* Larger icon */
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    #preview {
+      max-width: 180px; /* Larger preview */
+      max-height: 180px;
+      border-radius: var(--border-radius);
+      object-fit: contain;
+      margin-top: 15px;
+      border: 1px solid var(--border-color);
+    }
+
+    .color-options {
+      display: flex;
+      gap: 15px; /* More space between color buttons */
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      align-items: center; /* Align picker with buttons */
+    }
+
+    .color-button {
+      width: 42px; /* Slightly larger buttons */
+      height: 42px;
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      border-radius: 50%;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .color-button::after {
+      content: '✔';
+      color: var(--white);
+      font-size: 1.3rem; /* Larger checkmark */
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .color-button.selected {
+      border: 3px solid var(--primary-color);
+      transform: scale(1.15); /* More pronounced selection */
+      box-shadow: 0 0 0 5px rgba(63, 81, 181, 0.2);
+    }
+
+    .color-button.selected::after {
+      display: block;
+    }
+
+    /* Override checkmark color for white background */
+    .color-button[data-color="#ffffff"].selected::after {
+        color: var(--primary-color);
+        text-shadow: none; /* No shadow on white checkmark */
+    }
+
+    input[type="color"] {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      width: 45px; /* Larger color picker */
+      height: 45px;
+      border: 2px solid var(--border-color);
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+      background: none;
+      outline: none; /* Remove outline on focus */
+      transition: border-color 0.2s ease;
+    }
+    input[type="color"]:focus {
+        border-color: var(--primary-color);
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+    input[type="color"]::-moz-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-moz-color-swatch { border: none; border-radius: 50%; }
+
+
+    select {
+      width: 100%;
+      padding: 14px 18px; /* More padding */
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      margin-bottom: 30px; /* More space */
+      font-size: 1.05rem;
+      color: var(--text-color);
+      background-color: var(--white);
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%233f51b5%22%20d%3D%22M287%2C197.3L159.2%2C69.5c-3.2-3.2-8.4-3.2-11.6%2C0L5.4%2C197.3c-3.2%2C3.2-3.2%2C8.4%2C0%2C11.6l16.1%2C16.1c3.2%2C3.2%2C8.4%2C3.2%2C11.6%2C0l118-118l118%2C118c3.2%2C3.2%2C8.4%2C3.2%2C11.6%2C0l16.1-16.1C290.2%2C205.7%2C290.2%2C200.5%2C287%2C197.3z%22%2F%3E%3C%2Fsvg%3E'); /* Updated arrow color */
+      background-repeat: no-repeat;
+      background-position: right 18px top 50%; /* Adjusted arrow position */
+      background-size: 14px;
+      padding-right: 50px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+    }
+
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 18px; /* More padding for a bigger button */
+      background-color: var(--accent-color); /* Use accent color for CTA */
+      color: var(--white);
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 1.2rem; /* Larger font */
+      font-weight: 700; /* Bolder text */
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #fb8c00; /* Darker accent on hover */
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    button[type="submit"]:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2rem;
+        padding: 15px 0;
+      }
+      .header-logo {
+        height: 300px; /* Adjust for smaller screens */
+      }
+      .main-content {
+        padding: 30px;
+        margin: 20px;
+        max-width: calc(100% - 40px); /* Adjust max-width for smaller screens */
+      }
+      .upload-area {
+        padding: 25px;
+      }
+      .upload-area .icon {
+        font-size: 2.5rem;
+      }
+      .color-button {
+        width: 38px;
+        height: 38px;
+      }
+      input[type="color"] {
+        width: 40px;
+        height: 40px;
+      }
+      select {
+        padding: 12px 15px;
+        font-size: 1rem;
+      }
+      button[type="submit"] {
+        padding: 15px;
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+      .header-logo {
+        height: 300px; /* Adjust for very small screens */
+      }
+      .main-content {
+        padding: 20px;
+        margin: 10px;
+      }
+      .color-options {
+        gap: 10px;
+      }
+      .color-button {
+        width: 35px;
+        height: 35px;
+      }
+      input[type="color"] {
+        width: 38px;
+        height: 38px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+  <h1>
+    <img src="{{ url_for('static', filename='logo.gif') }}" class="header-logo"> PhotoFit Pro
+  </h1>
+</header>
+
+  <div class="main-content">
+    <form id="photoForm" action="/process" method="POST" enctype="multipart/form-data">
+      <label for="image">Upload Photo:</label>
+      <div class="upload-area" onclick="document.getElementById('image').click();">
+       <!-- <span class="icon">⬆️</span>-->
+        <p>Drag & drop your image here, or click to browse</p>
+        <input type="file" id="image" name="image" accept="image/*" required>
+        <img id="preview" src="#" alt="Image preview..." style="display:none;" />
+      </div>
+
+      <label>Background Color:</label>
+      <div class="color-options">
+        <div class="color-button selected" style="background-color: #ffffff;" data-color="#ffffff" title="White"></div>
+        <div class="color-button" style="background-color: #87ceeb;" data-color="#87ceeb" title="Sky Blue"></div>
+        <div class="color-button" style="background-color: #d3d3d3;" data-color="#d3d3d3" title="Light Gray"></div>
+        <div class="color-button" style="background-color: #ffcccc;" data-color="#ffcccc" title="Pink"></div>
+        <input type="color" id="bg_color_picker" value="#ffffff" title="Custom Color">
+      </div>
+      <input type="hidden" id="bg_color" name="bg_color" value="#ffffff">
+
+      <label for="country">Country:</label>
+      <select id="country" name="country">
+        {% for country_key, dimensions in passport_countries_data.items() %}
+          <option value="{{ country_key }}" {% if country_key =='india' %}selected{% endif %}>
+            {{ country_key.replace('_', ' ').title() }} ({{ dimensions[2] }})
+          </option>
+        {% endfor %}
+      </select>
+
+      <label for="num_copies">Number of Photos:</label>
+      <select id="num_copies" name="num_copies">
+        <option value="single_image">Single Image</option>
+        <option value="2" class="sheet-option">2 Photos</option>
+        <option value="3" class="sheet-option">3 Photos</option>
+        <option value="4" class="sheet-option">4 Photos</option>
+        <option value="5" class="sheet-option">5 Photos</option>
+        <option value="6" class="sheet-option">6 Photos</option>
+        <option value="7" class="sheet-option">7 Photos</option>
+        <option value="8" class="sheet-option" selected>8 Photos</option>
+      </select>
+
+      <button type="submit">✨ Generate Photo(s)</button>
+    </form>
+  </div>
+
+  <script>
+    // Preview image
+    const input = document.getElementById('image');
+    const preview = document.getElementById('preview');
+    const uploadArea = document.querySelector('.upload-area');
+    const uploadAreaText = uploadArea.querySelector('p');
+    const uploadAreaIcon = uploadArea.querySelector('.icon');
+
+    input.onchange = evt => {
+      const [file] = input.files;
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+        uploadAreaText.style.display = 'none';
+        uploadAreaIcon.style.display = 'none';
+        // Adjust padding to center preview vertically if it's smaller
+        uploadArea.style.padding = '15px';
+        preview.style.margin = 'auto'; // Center the image horizontally within the upload area
+      } else {
+        preview.style.display = 'none';
+        uploadAreaText.style.display = 'block';
+        uploadAreaIcon.style.display = 'block';
+        uploadArea.style.padding = '30px'; // Restore padding
+        preview.style.margin = '15px 0'; // Restore default margin
+      }
+    };
+
+    // Handle drag and drop for image upload
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, preventDefaults, false);
+      // document.body.addEventListener(eventName, preventDefaults, false); // Removed body listener to prevent file drop on entire page
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, () => uploadArea.classList.add('hover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('hover'), false);
+    });
+
+    function preventDefaults (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    uploadArea.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      input.files = files; // Assign dropped files to the input
+      const event = new Event('change'); // Trigger change event
+      input.dispatchEvent(event);
+    }
+
+    // Handle color selection
+    const colorButtons = document.querySelectorAll('.color-button');
+    const colorPicker = document.getElementById('bg_color_picker');
+    const bgColorInput = document.getElementById('bg_color');
+
+    // Set initial selected state for the default color
+    document.querySelector('.color-button[data-color="#ffffff"]').classList.add('selected');
+
+    colorButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        colorButtons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+        const color = button.getAttribute('data-color');
+        bgColorInput.value = color;
+        colorPicker.value = color;
+      });
+    });
+
+    colorPicker.addEventListener('input', () => {
+      colorButtons.forEach(btn => btn.classList.remove('selected')); // Deselect pre-defined buttons
+      bgColorInput.value = colorPicker.value;
+    });
+
+    // If a custom color is picked, ensure none of the preset buttons are selected
+    colorPicker.addEventListener('change', () => {
+        colorButtons.forEach(btn => btn.classList.remove('selected'));
+    });
+
+    // --- Dynamic display of 'Number of Photos' options based on Country ---
+    const countrySelect = document.getElementById('country');
+    const numCopiesSelect = document.getElementById('num_copies');
+    const sheetOptions = document.querySelectorAll('.sheet-option'); // Select all options with class 'sheet-option'
+
+    function updateNumCopiesOptions() {
+      const selectedCountry = countrySelect.value;
+
+      if (selectedCountry === 'india') {
+        // Show all sheet options
+        sheetOptions.forEach(option => {
+          option.style.display = 'block';
+        });
+        // Ensure a sheet option is selected if it was previously single_image
+        if (numCopiesSelect.value === 'single_image') {
+          numCopiesSelect.value = '8'; // Default to 8 photos for India if single was selected
+        }
+      } else {
+        // Hide all sheet options, only 'single_image' remains visible
+        sheetOptions.forEach(option => {
+          option.style.display = 'none';
+        });
+        // Force 'Single Image' selection
+        numCopiesSelect.value = 'single_image';
+      }
+    }
+
+    // Attach event listener to country select
+    countrySelect.addEventListener('change', updateNumCopiesOptions);
+
+    // Call on page load to set initial state
+    updateNumCopiesOptions();
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sheet Created!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            // Define a custom primary color to match the gradient/buttons
+            'primary-blue': '#3b82f6', // Equivalent to blue-600
+            'primary-purple': '#8b5cf6', // Equivalent to purple-600
+            'success-green': '#10b981', // Equivalent to green-600
+            'dark-gray-text': '#1f2937', // Equivalent to gray-800
+            'light-gray-text': '#374151', // Equivalent to gray-700
+            'subtle-gray': '#e5e7eb', // Equivalent to gray-200 for borders
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    /* Ensure font smoothing and base styles are applied */
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-primary-blue to-primary-purple flex items-center justify-center p-4 font-sans antialiased">
+
+  <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-10 w-full max-w-2xl text-center flex flex-col items-center transform transition-all duration-300 ease-out scale-95 opacity-0 animate-fade-in">
+    <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-18 w-18 text-success-green mb-7 animate-bounce-in">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-8.16"/><path d="m22 4-7 7-4-4"/>
+    </svg>
+    <h2 class="text-3xl md:text-5xl font-extrabold text-dark-gray-text leading-tight mb-3 tracking-tight">
+      Sheet Created Successfully! 🎉
+    </h2>
+    <p class="text-lg md:text-xl text-light-gray-text mb-9">
+      Your passport photo sheet is ready for download.
+    </p>
+
+    <div class="w-full max-w-xl aspect-video bg-subtle-gray rounded-xl overflow-hidden shadow-lg border border-subtle-gray flex items-center justify-center mb-10 transform scale-95 opacity-0 animate-scale-in">
+      <img src="{{ url_for('download', filename=filename) }}" alt="Passport Sheet Preview" class="w-full h-full object-contain"
+           onerror="this.onerror=null;this.src='https://placehold.co/800x600/E0E0E0/808080?text=Image+Not+Found&font=inter'; this.classList.add('p-4');" />
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-5 w-full justify-center">
+      <a href="{{ url_for('download', filename=filename) }}" class="flex items-center justify-center px-8 py-4 bg-primary-blue text-white text-xl font-bold rounded-xl shadow-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-7 w-7 mr-3">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+        </svg>
+        Download Sheet
+      </a>
+      <a href="{{ url_for('index') }}" class="flex items-center justify-center px-8 py-4 bg-gray-300 text-gray-800 text-xl font-bold rounded-xl shadow-lg hover:bg-gray-400 transform hover:scale-105 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-7 w-7 mr-3">
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.76 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.76-2.74L21 16"/><path d="M21 21v-5h-5"/>
+        </svg>
+        Generate Another
+      </a>
+    </div>
+
+    <div class="mt-12 text-center text-gray-500 text-base border-t border-subtle-gray pt-8 w-full">
+      <p class="mb-2">
+        <span class="font-semibold text-gray-700">Trusted by thousands.</span> Secure, fast, and compliant with official requirements.
+      </p>
+      <p class="text-sm">
+        &copy; <span id="current-year-result"></span> Passport Photo Creator. All rights reserved.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('current-year-result').textContent = new Date().getFullYear();
+
+      // Simple animation for the main card and image preview
+      const mainCard = document.querySelector('.animate-fade-in');
+      const previewImage = document.querySelector('.animate-scale-in');
+      const successIcon = document.querySelector('.animate-bounce-in');
+
+      setTimeout(() => {
+        mainCard.classList.remove('scale-95', 'opacity-0');
+      }, 100); // Slight delay for main card fade-in
+
+      setTimeout(() => {
+        previewImage.classList.remove('scale-95', 'opacity-0');
+      }, 300); // Delay for image scale-in after card
+
+      setTimeout(() => {
+        successIcon.style.animation = 'bounceIn 1s ease-out forwards';
+      }, 500); // Delay for icon bounce-in
+
+    });
+  </script>
+</body>
+</html>
